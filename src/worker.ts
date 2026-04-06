@@ -235,15 +235,41 @@ async function setIntent(intent: string, env: Env): Promise<any> {
   const key = env.DEEPSEEK_API_KEY;
   if (!key) return { error: 'No API key configured.' };
 
+  // Archetype catalog — maps domains to fork candidates
+  const ARCHETYPES = [
+    {domain:'coding',repo:'makerlog-ai',equip:['file-tree','git-integration','test-runner'],skills:['code-gen','refactor','debug']},
+    {domain:'research',repo:'personallog-ai',equip:['web-scraper','citation-tracker'],skills:['query-decomp','synthesis','fact-check']},
+    {domain:'robotics',repo:'nexus-git-agent',equip:['bytecode-vm','wire-protocol','safety-machine'],skills:['reflex','trust','coordination']},
+    {domain:'education',repo:'studylog-ai',equip:['socratic-engine','flashcards','crystal-graph'],skills:['teach-dont-tell','adaptive','spaced-rep']},
+    {domain:'creative',repo:'dmlog-ai',equip:['storyboard','dice-roller','world-state'],skills:['narrative','branching','canon-check']},
+    {domain:'tutoring',repo:'tutor-ai',equip:['lesson-planner','quiz-engine','progress-tracker'],skills:['adapt-level','examples','analogies']},
+    {domain:'business',repo:'businesslog-ai',equip:['crm','pipeline','analytics'],skills:['strategy','forecasting','negotiation']},
+    {domain:'gaming',repo:'fleet-rpg',equip:['stat-system','encounter-engine','inventory'],skills:['balance','narration','reward-design']},
+    {domain:'fitness',repo:'healthlog-ai',equip:['workout-log','sleep-tracker','nutrition-db'],skills:['plan-adapt','injury-prevent','progress']},
+    {domain:'cooking',repo:'cooklog-ai',equip:['recipe-db','ingredient-matcher','timer'],skills:['meal-plan','dietary-adapt','technique']},
+    {domain:'legal',repo:'cocapn-lite',equip:['case-db','citation-network','contract-analyzer'],skills:['legal-reasoning','precedent','risk-id']},
+    {domain:'finance',repo:'businesslog-ai',equip:['market-feed','portfolio','risk-calc'],skills:['allocation','rebalance','tax-loss']},
+    {domain:'support',repo:'personallog-ai',equip:['ticket-system','knowledge-base','sentiment'],skills:['intent-class','resolution','escalation']},
+    {domain:'npc',repo:'craftmind-herding',equip:['behavior-tree','dialogue','memory','emotion'],skills:['personality','context-aware','goal-driven']},
+    {domain:'marketing',repo:'businesslog-ai',equip:['event-tracker','funnel','attribution','dashboard'],skills:['channel-score','lead-score','roi-calc']},
+  ];
+
+  // Match intent to archetype
+  const intentLower = intent.toLowerCase();
+  const match = ARCHETYPES.find(a => intentLower.includes(a.domain)) || ARCHETYPES[0];
+
   // LLM generates evolution plan
   const planPrompt = 'Captain wants to build: "' + intent + '"\n\n'
+    + 'NEAREST ARCHETYPE: ' + match.domain + ' (based on ' + match.repo + ')\n'
+    + 'ARCHETYPE EQUIPMENT: ' + match.equip.join(', ') + '\n'
+    + 'ARCHETYPE SKILLS: ' + match.skills.join(', ') + '\n\n'
     + 'Generate an evolution plan for a git-agent seed. The seed starts as a generic chat agent (~500 lines Cloudflare Worker) and will evolve itself into the target application.\n\n'
     + 'Respond with JSON:\n'
     + '{"persona":"what the agent should call itself and how it should behave",'
     + '"capabilities":["chat","domain_feature_1","domain_feature_2"],'
     + '"milestones":["first milestone","second milestone","third milestone","polish"],'
     + '"testPrompt":"a test prompt to verify the agent works for this domain",'
-    + '"equipment":["what data/tools the agent needs"]}\n\n'
+    + '"equipment":' + JSON.stringify(match.equip) + '}'
     + 'Output JSON only.';
 
   let planData: any;
