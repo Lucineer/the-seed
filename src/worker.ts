@@ -139,33 +139,45 @@ async function evolve(env: Env): Promise<any> {
 
   // Extract plan and code
   const mutationStart = raw.indexOf('MUTATION_START');
-  if (mutationStart === -1) return { error: 'No MUTATION_START marker found in LLM output', raw: raw.slice(0, 500) };
+  if (mutationStart === -1) return { error: 'No MUTATION_START marker found in LLM output', raw: raw.slice(0, 1000), hasExport: raw.includes('export default'), hasFetch: raw.includes('fetch(') };
 
   const plan = raw.slice(0, mutationStart).trim();
   let newCode = raw.slice(mutationStart + 'MUTATION_START'.length).trim();
 
-  // Clean up code fences
-  if (newCode.startsWith('```')) newCode = newCode.replace(/^```[\w]*\n/, '').replace(/\n```$/, '');
+  // Clean up code fences — handle multiple layers
+  while (newCode.startsWith('```')) {
+    newCode = newCode.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+  }
+  // Strip leading/trailing whitespace lines
+  newCode = newCode.replace(/^\s+/, '').replace(/\s+$/, '');
 
   if (newCode.length < 500) return { error: 'Generated code too short (' + newCode.length + ' chars), likely broken', plan };
 
   // 4. Gate 1: Basic sanity check
   if (!newCode.includes('export default') || !newCode.includes('fetch(')) {
-    return { error: 'Code missing required patterns (export default, fetch)', plan };
+    return { error: 'Code missing required patterns (export default, fetch)', plan, codePreview: newCode.slice(0, 500), hasExport: newCode.includes('export default'), hasFetch: newCode.includes('fetch(') };
   }
 
-  // 5. Gate 2: Score the mutation
-  let beforeScore = 0;
-  let afterScore = 0;
-  try {
-    const testPrompt = 'This is a ' + state.persona + '. Captain wants: ' + state.intent + '.\n\nRate the code quality and domain fit. Score 1-10.\n\nCode (first 2000 chars):\n```\n';
-    beforeScore = await scoreCode(testPrompt + currentCode.slice(0, 2000) + '\n```', key);
-    afterScore = await scoreCode(testPrompt + newCode.slice(0, 2000) + '\n```', key);
-  } catch (e: any) {
-    return { error: 'Scoring failed: ' + e.message, plan };
-  }
-
-  const improved = afterScore > beforeScore;
+  // 5. Score mutation (keyword heuristic — no extra LLM call, fits CF 30s limit)
+  var intentLower = state.intent.toLowerCase();
+  var domainKeywords: Record<string, string[]> = {
+    fishing:['species','tackle','bait','lure','lake','river','catch','fish'],
+    coding:['code','function','debug','refactor','syntax','error','build'],
+    education:['lesson','quiz','student','learn','explain','question','understand'],
+    gaming:['hp','attack','inventory','encounter','dice','battle','level'],
+    creative:['story','character','scene','narrative','dialogue','world'],
+    research:['source','citation','query','synthesize','analyze','finding'],
+    cooking:['recipe','ingredient','cook','bake','temperature','meal'],
+    legal:['case','contract','citation','clause','liability','compliance'],
+    fitness:['workout','exercise','rep','set','muscle','recovery','calories'],
+  };
+  var matched = Object.entries(domainKeywords).find(function(kv){return intentLower.includes(kv[0]);});
+  var keywords = matched ? matched[1] : [];
+  var newHits = keywords.filter(function(k){return newCode.toLowerCase().includes(k);}).length;
+  var oldHits = keywords.filter(function(k){return currentCode.toLowerCase().includes(k);}).length;
+  var beforeScore = Math.min(10, 3 + oldHits);
+  var afterScore = Math.min(10, 3 + newHits);
+  var improved = afterScore > beforeScore;
   const result = { plan, beforeScore, afterScore, improved, codeLength: newCode.length };
 
   // 6. If improved, commit to branch
@@ -184,7 +196,7 @@ async function evolve(env: Env): Promise<any> {
       // Commit new code
       const commit = await ghPut('/repos/Lucineer/the-seed/contents/src/worker.ts', token, {
         message: 'seed: gen ' + state.generation + ' — ' + plan.slice(0, 60) + '\n\nScore: ' + beforeScore + ' -> ' + afterScore + '\n\nSuperinstance & Lucineer (DiGennaro et al.)',
-        content: btoa(newCode),
+        content: btoa(unescape(encodeURIComponent(newCode))),
         sha: currentSha,
         branch: branchName,
       });
