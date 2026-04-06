@@ -1,0 +1,10 @@
+{
+  "name": "the-seed",
+  "displayName": "The Seed",
+  "type": "cocapn-vessel",
+  "category": "infrastructure",
+  "description": "One repo to become them all. Self-evolving git-agent that deploys as chat and iterates into any domain.",
+  "capabilities": ["self-evolution", "captain-to-cocapn", "bootcamp", "branch-ab-testing", "overnight-mode", "auto-rollback"],
+  "endpoints": { "health": "/health", "become": "/api/become", "evolve": "/api/evolve", "overnight": "/api/overnight", "state": "/api/state", "chat": "/api/chat" },
+  "deployment": { "url": "https://the-seed.casey-digennaro.workers.dev" }
+}
