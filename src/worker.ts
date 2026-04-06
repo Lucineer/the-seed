@@ -32,7 +32,7 @@ async function llm(prompt: string, key: string, sys: string, model = 'deepseek-c
 }
 
 async function ghGet(path: string, token: string) {
-  const r = await fetch(GH_API + path, { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.v3+json' } });
+  const r = await fetch(GH_API + path, { headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.v3+json', 'User-Agent': 'the-seed/1.0' } });
   if (!r.ok) throw new Error('GH ' + r.status + ' ' + (await r.text()));
   return r.json();
 }
@@ -40,7 +40,7 @@ async function ghGet(path: string, token: string) {
 async function ghPut(path: string, token: string, body: any) {
   const r = await fetch(GH_API + path, {
     method: 'PUT',
-    headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json', 'User-Agent': 'the-seed/1.0' },
     body: JSON.stringify(body),
   });
   if (!r.ok) throw new Error('GH ' + r.status + ' ' + (await r.text()));
@@ -50,7 +50,7 @@ async function ghPut(path: string, token: string, body: any) {
 async function ghPost(path: string, token: string, body: any) {
   const r = await fetch(GH_API + path, {
     method: 'POST',
-    headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json', 'User-Agent': 'the-seed/1.0' },
     body: JSON.stringify(body),
   });
   if (!r.ok) throw new Error('GH ' + r.status + ' ' + (await r.text()));
