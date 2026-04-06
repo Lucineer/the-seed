@@ -1,0 +1,8 @@
+name = "the-seed"
+main = "src/worker.ts"
+compatibility_date = "2025-01-01"
+account_id = "049ff5e84ecf636b53b162cbb580aae6"
+
+[[kv_namespaces]]
+binding = "SEED_KV"
+id = "2bedfe4448cb4159a2cd350609c938dd"
