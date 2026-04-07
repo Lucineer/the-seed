@@ -1,52 +1,36 @@
-# The Seed 🌱
+# The Seed ✨
 
-You don't build software. You plant it.
+You give this repository a goal. It rewrites its own code to become that thing. It runs on Cloudflare Workers with zero dependencies. This is a fork-first project: your copy evolves independently.
 
-This is a minimal, self-modifying git agent. Give it a goal, and it will attempt to evolve its own codebase to meet it. It starts with no boilerplate and no preset features. This repository is the seed for whatever you want to grow.
+**Live URL:** https://the-seed.casey-digennaro.workers.dev
 
-Most tools generate code for you to manage. This one acts as an autonomous developer: it writes directly to its own repository, deploys itself, tests its work, and iterates. Every fork begins a new, independent evolutionary line.
+## Why This Exists
+Starting a project often means writing repetitive setup code before you can build the unique part. This tool handles the initial setup for you. You describe the goal, and it writes the first version of the code.
 
----
+## Quick Start
+1.  **Fork this repository.** Your fork is your independent working copy.
+2.  **Deploy** the fork to Cloudflare Workers. You will need:
+    *   A `DEEPSEEK_API_KEY` for the reasoning engine.
+    *   A `GITHUB_TOKEN` with `repo` and `workflow` permissions for your fork.
+    *   A KV namespace bound as `SEED_KV`.
+3.  **Open** your deployed Worker URL, type your goal, and wait for the initial code to be written and committed.
 
-## Quick Start ✅
-1.  **Fork this repo first.** This agent runs autonomously on its own code. Your fork becomes its world.
-2.  Deploy your fork to Cloudflare Workers. You will need:
-    *   `DEEPSEEK_API_KEY` for reasoning and code generation.
-    *   `GITHUB_TOKEN` with `repo` and `workflow` permissions for its own repository.
-    *   A KV namespace bound with the name `SEED_KV`.
-3.  Open your deployed Worker URL. State your goal.
+## What It Does
+*   **Writes Its Own Code:** It reads the current source files, plans changes to meet your goal, and writes new code directly into the repository.
+*   **Manages Git Commits:** It commits changes with descriptive messages and can roll back if an error is detected.
+*   **Triggers Deployments:** It can initiate a new Cloudflare Workers deployment after committing successful changes.
+*   **Iterates Based on State:** It uses the KV store to remember context and adjust its approach.
+*   **Zero Dependencies:** The runtime has no npm packages or build steps.
+*   **MIT Licensed:** All code it generates is under the MIT license.
 
-## What Happens
-You submit a goal. The Seed then:
-*   Analyzes and decomposes the goal into testable, incremental steps.
-*   Writes and implements the necessary code.
-*   Commits changes directly to your forked repository.
-*   Triggers a new deployment.
-*   Validates the changes against the goal.
-*   Rolls back failed attempts and learns from them.
-*   Loops until the objective is met or it cannot proceed.
+## Honest Limitation
+It processes one goal at a time. Submitting a new goal while it is actively working will interrupt the previous task.
 
-It will make mistakes and sometimes break. This is part of its learning process.
+## What Makes This Different
+1.  It modifies its own source code directly. There is no separate template or output directory.
+2.  The entire logic runs in one Cloudflare Worker script. There is no external orchestrator service.
+3.  It operates autonomously. If it encounters an error, it will attempt a rollback before reporting the issue.
 
-## How This Is Different
-This is not a copilot. It is an autonomous process that operates on the repository you provide.
-*   **No Preset Features:** Every capability is added through self-modification.
-*   **No Local Setup:** Everything runs from a single Cloudflare Worker.
-*   **Full Transparency:** Every change is a standard git commit you can review, revert, or modify.
-*   **No Lock-in:** It's just a git repo and a Worker. You can assume direct control at any time.
+Superinstance and Lucineer (DiGennaro et al.)
 
-**One Honest Limitation:** Its incremental, goal-driven approach works best for additive features or refinements. Goals requiring a fundamental, breaking architectural rewrite from the first commit may stall.
-
-## Bring Your Own Keys
-You provide the API keys. No data passes through our servers. All execution and reasoning happens within your own Cloudflare Worker.
-
----
-
-## License
-MIT. Your fork belongs to you. Do whatever you want with it.
-
-Attribution: Superinstance & Lucineer (DiGennaro et al.)
-
----
-
-Part of the [Cocapn Fleet](https://the-fleet.casey-digennaro.workers.dev) • [cocapn.ai](https://cocapn.ai) 🚀🌌⚙️
+<div style="text-align:center;padding:16px;color:#64748b;font-size:.8rem"><a href="https://the-fleet.casey-digennaro.workers.dev" style="color:#64748b">The Fleet</a> &middot; <a href="https://cocapn.ai" style="color:#64748b">Cocapn</a></div>
