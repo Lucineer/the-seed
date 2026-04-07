@@ -1,64 +1,52 @@
-# The Seed
+# The Seed 🌱
 
-You don't just build an application. You plant and cultivate one.
+You don't build software. You plant it.
 
-This is a self-modifying agent that deploys as a chat interface. You give it a goal, and it iteratively rewrites its own codebase to move toward that goal. It runs on Cloudflare Workers with no external dependencies.
+This is a minimal, self-modifying git agent. Give it a goal, and it will attempt to evolve its own codebase to meet it. It starts with no boilerplate and no preset features. This repository is the seed for whatever you want to grow.
 
-**Live instance:** https://the-seed.casey-digennaro.workers.dev
-
----
-
-## Why This Exists
-Many development tools require extensive setup or generate code you must later maintain. The Seed is different. It is a single deployable agent that resides in its own repository. You describe a direction, and it evolves itself through a series of tested, committed changes.
+Most tools generate code for you to manage. This one acts as an autonomous developer: it writes directly to its own repository, deploys itself, tests its work, and iterates. Every fork begins a new, independent evolutionary line.
 
 ---
 
-## How It Works
-This is a standard vessel in the Cocapn Fleet. You deploy it once. Through the chat interface, you provide a goal. The agent then operates on its own code: it creates branches, writes commits, tests changes, and can revert if something breaks. The codebase adapts over time without requiring manual intervention.
+## Quick Start ✅
+1.  **Fork this repo first.** This agent runs autonomously on its own code. Your fork becomes its world.
+2.  Deploy your fork to Cloudflare Workers. You will need:
+    *   `DEEPSEEK_API_KEY` for reasoning and code generation.
+    *   `GITHUB_TOKEN` with `repo` and `workflow` permissions for its own repository.
+    *   A KV namespace bound with the name `SEED_KV`.
+3.  Open your deployed Worker URL. State your goal.
 
----
+## What Happens
+You submit a goal. The Seed then:
+*   Analyzes and decomposes the goal into testable, incremental steps.
+*   Writes and implements the necessary code.
+*   Commits changes directly to your forked repository.
+*   Triggers a new deployment.
+*   Validates the changes against the goal.
+*   Rolls back failed attempts and learns from them.
+*   Loops until the objective is met or it cannot proceed.
 
-## What It Does
-| Feature | Description |
-|---|---|
-| Self-Modification | You provide a goal (e.g., "add task tracking") and it will plan and implement code changes to achieve it. |
-| Iteration Cycles | It operates in short cycles, attempting changes and reporting progress. |
-| Branch Testing | It can create parallel branches to explore different implementation approaches. |
-| Persistent Operation | It can run unattended over multiple cycles to work toward longer-term goals. |
-| Automatic Rollback | Failed deployments or broken functionality trigger an automatic revert. |
-| Zero Dependencies | The runtime is a single Cloudflare Worker script. No npm, builds, or external services are required. |
+It will make mistakes and sometimes break. This is part of its learning process.
 
-## One Current Limitation
-The agent's effectiveness is tied to the specificity of your instructions. Vague goals can lead to meandering or inefficient evolution cycles. Providing clear, incremental objectives yields the best results.
+## How This Is Different
+This is not a copilot. It is an autonomous process that operates on the repository you provide.
+*   **No Preset Features:** Every capability is added through self-modification.
+*   **No Local Setup:** Everything runs from a single Cloudflare Worker.
+*   **Full Transparency:** Every change is a standard git commit you can review, revert, or modify.
+*   **No Lock-in:** It's just a git repo and a Worker. You can assume direct control at any time.
 
----
+**One Honest Limitation:** Its incremental, goal-driven approach works best for additive features or refinements. Goals requiring a fundamental, breaking architectural rewrite from the first commit may stall.
 
-## What Makes It Different
-*   It acts directly on its own source code within its GitHub repository—it doesn't just suggest changes.
-*   There is no protected "core" logic; every part of the agent is subject to modification during evolution.
-*   It is designed to be forked. Each fork can begin its own unique evolutionary path.
-
----
-
-## Quick Start
-1.  Fork this repository to your GitHub account.
-2.  Deploy it to Cloudflare Workers, setting these three environment variables:
-    *   `DEEPSEEK_API_KEY` (for reasoning and code generation)
-    *   `GITHUB_TOKEN` (with write access to the forked repo)
-    *   A Cloudflare KV namespace binding (for persistence)
-3.  Open the deployed worker's URL and describe what you want it to become.
-
-You should see commits appearing in your repository within minutes.
+## Bring Your Own Keys
+You provide the API keys. No data passes through our servers. All execution and reasoning happens within your own Cloudflare Worker.
 
 ---
 
 ## License
-MIT License. Part of the Cocapn Fleet.
+MIT. Your fork belongs to you. Do whatever you want with it.
 
-**Attribution:** Superinstance & Lucineer (DiGennaro et al.)
+Attribution: Superinstance & Lucineer (DiGennaro et al.)
 
 ---
-<div align="center">
-  <a href="https://the-fleet.casey-digennaro.workers.dev">The Fleet</a> • 
-  <a href="https://cocapn.ai">Cocapn</a>
-</div>
+
+Part of the [Cocapn Fleet](https://the-fleet.casey-digennaro.workers.dev) • [cocapn.ai](https://cocapn.ai) 🚀🌌⚙️
