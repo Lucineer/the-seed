@@ -403,6 +403,7 @@ export default {
       + '<div class="fleet"><a href="https://the-fleet.casey-digennaro.workers.dev">&#x2693; The Fleet</a> &middot; <a href="https://cocapn.ai">Cocapn</a> &middot; <a href="https://github.com/Lucineer/the-seed">GitHub</a></div>'
       + '</body></html>',
       { headers: { 'Content-Type': 'text/html', 'Content-Security-Policy': CSP;charset=utf-8' } },
+      'X-Frame-Options': 'DENY',
     );
   },
 };
