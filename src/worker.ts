@@ -1,3 +1,9 @@
+// The Seed — one repo to become them all
+// Deploys as generic chat, receives captain's intent, iterates itself into any domain.
+// The agent IS the repo at every step.
+
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*; frame-ancestors 'none';";
+
 export interface Env {
   SEED_KV: KVNamespace;
   DEEPSEEK_API_KEY: string;
@@ -153,7 +159,11 @@ export default {
 </body>
 </html>`;
       return new Response(html, {
-        headers: { "Content-Type": "text/html; charset=utf-8" },
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Security-Policy": CSP,
+          "X-Frame-Options": "DENY",
+        },
       });
     }
 
